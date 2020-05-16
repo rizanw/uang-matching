@@ -1,10 +1,8 @@
 
 import glob
-import cv2
-from matplotlib import pyplot as plt
+import cv2 
 import numpy as np
-import imutils
-import argparse
+import imutils 
 
 
 def uang_matching():
@@ -20,10 +18,10 @@ def uang_matching():
         kernel = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
         tmp = cv2.filter2D(tmp, -1, kernel) #sharpening
         tmp = cv2.blur(tmp, (3, 3))  # smoothing
-        tmp = cv2.Canny(tmp, 50, 200)  # Edge with Canny
+        tmp = cv2.Canny(tmp, 50, 200)  # Edge with Canny 
         nominal = template_file.replace('template\\', '').replace('.jpg', '')
         template_data.append({"glob":tmp, "nominal":nominal})
-
+     
     # template matching
     for image_glob in glob.glob('test/*.jpg'):
         for template in template_data:
@@ -32,9 +30,10 @@ def uang_matching():
             cv2.imshow("Template", template['glob'])  
 
             image_test_p = cv2.cvtColor(image_test, cv2.COLOR_BGR2GRAY) 
+            cv2.imshow("Step: Grayscal", image_test_p) 
 
             image_test_p = cv2.Canny(image_test_p, 50, 200)
-            cv2.imshow("Step: edge with canny", image_test_p)
+            cv2.imshow("Step: edge with canny", image_test_p) 
 
             found = None
             thershold = 0.4
@@ -43,6 +42,7 @@ def uang_matching():
                 resized = imutils.resize(
                     image_test_p, width=int(image_test_p.shape[1] * scale))
                 r = image_test_p.shape[1] / float(resized.shape[1]) 
+                cv2.imshow("Step: rescale", resized) 
                 if resized.shape[0] < tmp_height or resized.shape[1] < tmp_width:
                     break
 
@@ -62,12 +62,9 @@ def uang_matching():
                     cv2.rectangle(image_test, (startX, startY),
                                   (endX, endY), (0, 0, 255), 2)
                 cv2.imshow("Result", image_test)
+
             cv2.waitKey(0)
 
 
-if __name__ == "__main__":
-    arg = argparse.ArgumentParser()
-    arg.add_argument("-s", "--single-img", type=bool, const=True, nargs='?')
-    args = vars(arg.parse_args())
-    # print(args)
+if __name__ == "__main__": 
     uang_matching()
